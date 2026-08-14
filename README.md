@@ -1,17 +1,21 @@
 # Dr Lucas HR Almeida
 
-Microsite autoral de **Dr Lucas HR Almeida**, médico formado pela FMRP-USP e fundador da Iniciativa VIA — Vida Integrada e Autônoma.
+Microsite autoral de **Dr Lucas HR Almeida**, médico generalista (FMRP-USP) e fundador da Iniciativa VIA — Vida Integrada e Autônoma.
 
-## Arquitetura
+## Conteúdo
 
-- `index.html`: conteúdo, metadados sociais e dados estruturados;
-- `styles.css`: identidade visual e responsividade;
-- `assets/dr-lucas-hr.jpg`: fotografia editorial sem metadados EXIF.
+- `index.html` — página autoral + oferta da Mentoria Sincronismo Híbrido
+- `styles.css` — identidade visual (paleta VIA)
+- `wrangler.jsonc` — configuração para Cloudflare Workers (Static Assets)
 
 ## Publicação
 
-Site estático destinado ao GitHub Pages em:
-
-<https://lucashralmeida.github.io/drlucashr/>
+Site estático destinado a **Cloudflare Workers** (Static Assets).
 
 O VIA-HUB permanece a identidade institucional. Este repositório representa a presença autoral do fundador e referencia o Hub sem absorvê-lo.
+
+## Deploy
+
+1. Conectar o repositório no Cloudflare Dashboard via OAuth (Workers & Pages → Connect to Git).
+2. Deploy command padrão: `npx wrangler deploy`.
+3. Cada push em `main` dispara rebuild automático.
