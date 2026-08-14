@@ -1,8 +1,9 @@
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "drlucashr",
   "compatibility_date": "2026-08-14",
   "assets": {
-    "directory": "./",
+    "directory": "./public",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
   }
