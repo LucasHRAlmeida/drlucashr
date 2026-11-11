@@ -1,0 +1,178 @@
+import React, { useState, useEffect } from 'react';
+import { Server, Database, Cloud, Lock, Terminal, Activity, ToggleLeft, ToggleRight, CheckCircle } from 'lucide-react';
+
+export default function GcpFirebasePedagogy() {
+  const [environment, setEnvironment] = useState('local');
+  const [logs, setLogs] = useState([]);
+
+  // Pedagogical snippets showcasing the difference between Emulator and Production
+  const codeSnippets = {
+    local: {
+      auth: `import { connectAuthEmulator, getAuth } from "firebase/auth";\nconst auth = getAuth();\nconnectAuthEmulator(auth, "http://127.0.0.1:9099");`,
+      firestore: `import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";\nconst db = getFirestore();\nconnectFirestoreEmulator(db, '127.0.0.1', 8080);`,
+      functions: `import { connectFunctionsEmulator, getFunctions } from "firebase/functions";\nconst functions = getFunctions(app);\nconnectFunctionsEmulator(functions, "127.0.0.1", 5001);`,
+      iam: `// Local execution uses Application Default Credentials\n// Run: gcloud auth application-default login\n// No IAM constraints in Emulator.`
+    },
+    production: {
+      auth: `import { getAuth } from "firebase/auth";\n// Production Auth utilizes live Identity Platform\nconst auth = getAuth(app);`,
+      firestore: `import { getFirestore } from "firebase/firestore";\n// Connections secured by Firebase Security Rules\nconst db = getFirestore(app);`,
+      functions: `import { getFunctions } from "firebase/functions";\n// Automatically routes to live Cloud Functions v2\nconst functions = getFunctions(app, "us-central1");`,
+      iam: `// Strictly enforced via Service Accounts\n// Principle of Least Privilege applied to roles/datastore.user\n// Managed via GCP Secret Manager.`
+    }
+  };
+
+  useEffect(() => {
+    addLog(`System initialized. Current target: ${environment.toUpperCase()}`);
+    // Simulate connection checks
+    setTimeout(() => {
+      addLog(`Connecting to ${environment === 'local' ? 'Emulator Suite via 127.0.0.1' : 'GCP Production via default region'}...`);
+    }, 600);
+  }, [environment]);
+
+  const addLog = (msg) => {
+    setLogs(prev => [...prev.slice(-4), `[${new Date().toISOString().split('T')[1].slice(0,8)}] ${msg}`]);
+  };
+
+  const toggleEnvironment = () => {
+    setEnvironment(prev => prev === 'local' ? 'production' : 'local');
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-100 p-8 font-sans selection:bg-blue-500 selection:text-white">
+      <div className="max-w-6xl mx-auto space-y-8">
+        
+        {/* Header */}
+        <header className="flex justify-between items-end border-b border-slate-700 pb-6">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-amber-500 bg-clip-text text-transparent">
+              GCP/Firebase Architecture Enablement
+            </h1>
+            <p className="text-slate-400 mt-2">Interactive configuration pedagogy for enterprise deployments</p>
+          </div>
+          
+          <div className="flex items-center space-x-4 bg-slate-800 p-3 rounded-lg border border-slate-700">
+            <span className={`text-sm font-semibold ${environment === 'local' ? 'text-amber-400' : 'text-slate-500'}`}>
+              Local Emulator
+            </span>
+            <button 
+              onClick={toggleEnvironment}
+              className="text-blue-500 hover:text-blue-400 transition-colors focus:outline-none"
+              aria-label="Toggle Environment"
+            >
+              {environment === 'local' ? <ToggleLeft size={36} /> : <ToggleRight size={36} />}
+            </button>
+            <span className={`text-sm font-semibold ${environment === 'production' ? 'text-blue-400' : 'text-slate-500'}`}>
+              Production GCP
+            </span>
+          </div>
+        </header>
+
+        {/* Architecture Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          {/* Card: Auth & Identity */}
+          <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Lock size={100} />
+            </div>
+            <div className="flex items-center space-x-3 mb-4">
+              <Lock className="text-amber-500" />
+              <h2 className="text-xl font-semibold">Identity & Access</h2>
+            </div>
+            <p className="text-sm text-slate-400 mb-4 h-10">
+              {environment === 'local' ? 'Auth Emulator intercepts token requests. No live phone/email verification required.' : 'Live Firebase Auth + Google Cloud IAM Service Account enforcement.'}
+            </p>
+            <div className="bg-slate-950 p-4 rounded-md font-mono text-sm text-green-400 overflow-x-auto">
+              <pre>{codeSnippets[environment].auth}</pre>
+            </div>
+            <div className="mt-4 bg-slate-950 p-4 rounded-md font-mono text-sm text-purple-400 overflow-x-auto">
+              <pre>{codeSnippets[environment].iam}</pre>
+            </div>
+          </div>
+
+          {/* Card: Firestore */}
+          <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Database size={100} />
+            </div>
+            <div className="flex items-center space-x-3 mb-4">
+              <Database className="text-blue-500" />
+              <h2 className="text-xl font-semibold">Firestore NoSQL</h2>
+            </div>
+            <p className="text-sm text-slate-400 mb-4 h-10">
+              {environment === 'local' ? 'In-memory database instance. Rules validated locally. Wiped on exit unless exported.' : 'Multi-region replicated database protected by strictly typed Security Rules.'}
+            </p>
+            <div className="bg-slate-950 p-4 rounded-md font-mono text-sm text-green-400 overflow-x-auto">
+              <pre>{codeSnippets[environment].firestore}</pre>
+            </div>
+            <div className="mt-4 flex items-center space-x-2 text-sm text-slate-300">
+              <CheckCircle size={16} className="text-green-500" />
+              <span>Rules validation: {environment === 'local' ? 'Local Unit Tests' : 'Deployed .rules file'}</span>
+            </div>
+          </div>
+
+          {/* Card: Serverless Compute */}
+          <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg relative overflow-hidden group md:col-span-2">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Cloud size={100} />
+            </div>
+            <div className="flex items-center space-x-3 mb-4">
+              <Server className="text-emerald-500" />
+              <h2 className="text-xl font-semibold">Functions v2 & Cloud Run</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-slate-400 mb-4">
+                  {environment === 'local' ? 'Node.js process binds to port 5001. Hot-reloading enabled for rapid iteration.' : 'Deployed to Cloud Run. Concurrency set to 80. Handled via API Gateway or Tasks.'}
+                </p>
+                <div className="bg-slate-950 p-4 rounded-md font-mono text-sm text-green-400 overflow-x-auto">
+                  <pre>{codeSnippets[environment].functions}</pre>
+                </div>
+              </div>
+              <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                <h3 className="font-semibold text-slate-200 mb-2">Service Integrations</h3>
+                <ul className="space-y-2 text-sm text-slate-400">
+                  <li className="flex justify-between">
+                    <span>Cloud Tasks</span>
+                    <span className={environment === 'local' ? 'text-amber-500' : 'text-blue-400'}>
+                      {environment === 'local' ? 'Mocked/Inline' : 'GCP Queue Managed'}
+                    </span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Secret Manager</span>
+                    <span className={environment === 'local' ? 'text-amber-500' : 'text-blue-400'}>
+                      {environment === 'local' ? '.env.local' : 'Runtime Bindings'}
+                    </span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Cloud Storage</span>
+                    <span className={environment === 'local' ? 'text-amber-500' : 'text-blue-400'}>
+                      {environment === 'local' ? 'Local FS Emulator' : 'GCS Buckets'}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Terminal/Log Output */}
+        <div className="bg-slate-950 rounded-xl p-4 border border-slate-800 shadow-inner">
+          <div className="flex items-center space-x-2 mb-3 text-slate-500 border-b border-slate-800 pb-2">
+            <Terminal size={16} />
+            <span className="text-xs font-mono uppercase tracking-wider">System Event Log</span>
+            <div className="flex-1"></div>
+            <Activity size={16} className="animate-pulse text-green-500" />
+          </div>
+          <div className="font-mono text-sm text-slate-300 space-y-1">
+            {logs.map((log, i) => (
+              <div key={i} className="animate-fade-in">{log}</div>
+            ))}
+            {logs.length === 0 && <span className="text-slate-600">Waiting for events...</span>}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
